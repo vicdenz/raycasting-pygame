@@ -9,13 +9,18 @@ pygame.display.set_caption("RayCasting")
 
 clock = pygame.time.Clock()
 
-light_source = [Ray((200, 200), (math.cos(radian), math.sin(radian))) for radian in numpy.arange(0.0, math.pi*2, math.pi/180)]
-boundaries = [Line((0, 0), (WIDTH, 0)), Line((0, HEIGHT-1), (WIDTH, HEIGHT-1)), Line((0, 0), (0, HEIGHT)), Line((WIDTH-1, 0), (WIDTH-1, HEIGHT))]
+light_source = [Ray((200, 200), (math.cos(radian), math.sin(radian))) for radian in numpy.arange(0.0, math.pi*2, math.pi/(180/DEGREE_INCREMENT))]
 
-for r in range(0, random.randint(0, MAX_BOUNDARIES)):
-    boundaries.append(Line((random.randint(0, WIDTH), random.randint(0, HEIGHT)), (random.randint(0, WIDTH), random.randint(0, HEIGHT))))
-
+boundaries = []
 light_area = []
+
+def randomize_boundaries():
+    global boundaries
+
+    boundaries = [Line((0, 0), (WIDTH, 0)), Line((0, HEIGHT-1), (WIDTH, HEIGHT-1)), Line((0, 0), (0, HEIGHT)), Line((WIDTH-1, 0), (WIDTH-1, HEIGHT))]
+
+    for r in range(0, random.randint(0, MAX_BOUNDARIES)):
+        boundaries.append(Line((random.randint(0, WIDTH), random.randint(0, HEIGHT)), (random.randint(0, WIDTH), random.randint(0, HEIGHT))))
 
 def update_light():
     global light_area
@@ -41,13 +46,14 @@ def redrawGameWindow():
     for boundary in boundaries:
         boundary.draw(screen)
 
-    for ray in light_source:
-        ray.draw(screen)
+    # for ray in light_source:
+    #     ray.draw(screen)
 
     pygame.draw.polygon(screen, RAY_COLOR, light_area)
 
     pygame.display.update()
 
+randomize_boundaries()
 update_light()
 
 running = True
@@ -58,11 +64,19 @@ while running:
         if event.type == pygame.QUIT:
             running = False
         
+        if event.type == pygame.KEYDOWN:
+            if event.key == pygame.KMOD_LCTRL:
+                running = False
+            
+            if event.key == pygame.K_SPACE:
+                randomize_boundaries()
+                update_light()
+
         if event.type == pygame.MOUSEMOTION:
             update_light()
 
             mouse_pos = pygame.mouse.get_pos()
-            for i, ray in enumerate(light_source):
+            for ray in light_source:
                 ray.pos.x = mouse_pos[0]
                 ray.pos.y = mouse_pos[1]
 
