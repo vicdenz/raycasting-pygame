@@ -2,14 +2,14 @@ import pygame
 import math
 from const import *
 
-class Ray:# a = inittial point, b = terminal point
+class Ray:# a = initial point, b = terminal point
     extend = 10
 
     def __init__(self, pos, dir):
         self.pos = pygame.Vector2(pos)
         self.dir = pygame.Vector2(dir)
 
-    def lookAt(self, new_x, new_y):
+    def point_to(self, new_x, new_y):
         dis_x = new_x-self.pos.x
         dis_y = new_y-self.pos.y
 
