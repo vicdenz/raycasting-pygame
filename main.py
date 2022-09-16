@@ -111,27 +111,31 @@ while running:
         retrace = True
 
     if key_pressed[pygame.K_w]:
-        player.set_pos((player.get_x(), player.get_y()-1))
+        player.set_pos((player.get_x(), player.get_y()-MOVEMENT_SPEED))
         retrace = True
 
     if key_pressed[pygame.K_a]:
-        player.set_pos((player.get_x()-1, player.get_y()))
+        player.set_pos((player.get_x()-MOVEMENT_SPEED, player.get_y()))
         retrace = True
 
     if key_pressed[pygame.K_s]:
-        player.set_pos((player.get_x(), player.get_y()+1))
+        player.set_pos((player.get_x(), player.get_y()+MOVEMENT_SPEED))
         retrace = True
     
     if key_pressed[pygame.K_d]:
-        player.set_pos((player.get_x()+1, player.get_y()))
+        player.set_pos((player.get_x()+MOVEMENT_SPEED, player.get_y()))
         retrace = True
     
     if key_pressed[pygame.K_p]:
         mode = "p"
+        player.set_pos(mouse[0].pos)
         retrace = True
     
     if key_pressed[pygame.K_m]:
         mode = "m"
+        for ray in mouse:
+            ray.pos.x = player.get_x()
+            ray.pos.y = player.get_y()
         retrace = True
 
     if key_pressed[pygame.K_LEFT]:
