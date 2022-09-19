@@ -25,16 +25,56 @@ mode = "m"
 def randomize_boundaries():
     global boundaries
 
-    boundaries = [Line((0, 0), (WIDTH, 0)), Line((0, HEIGHT-1), (WIDTH, HEIGHT-1)), Line((0, 0), (0, HEIGHT)), Line((WIDTH-1, 0), (WIDTH-1, HEIGHT))]
+    boundaries = []
 
-    for r in range(0, random.randint(MIN_BOUNDARIES, MAX_BOUNDARIES)):
-        start_point = (random.randint(0, WIDTH/GRID_SIZE)*GRID_SIZE, random.randint(0, HEIGHT/GRID_SIZE)*GRID_SIZE)
+    rows = WIDTH//GRID_SIZE
+    columns = HEIGHT//GRID_SIZE
+    maze = generate_maze(rows, columns, GRID_SIZE, interative_maze)
 
-        dir = [random.randint(0, 1)]
-        dir.append(abs(dir[0]-1))
+    for row in maze:
+        for cell in row:
+            line_x = cell.x*cell.size
+            line_y = cell.y*cell.size
 
-        end_point = (start_point[0] + dir[0] * (GRID_SIZE * random.randint(MIN_LENGTH, WIDTH/GRID_SIZE)), start_point[1] + dir[1] * (GRID_SIZE * random.randint(MIN_LENGTH, WIDTH/GRID_SIZE)))
-        boundaries.append(Line(start_point, end_point))
+            if cell.walls[N]:
+                a, b = (line_x, line_y), (line_x+cell.size, line_y)
+                for boundary in boundaries:
+                    if boundary.a == a and boundary.b == b:
+                        break
+                else:
+                    boundaries.append(Line(a, b))
+            if cell.walls[W]:
+                a, b = (line_x+cell.size, line_y), (line_x+cell.size, line_y+cell.size)
+                for boundary in boundaries:
+                    if boundary.a == a and boundary.b == b:
+                        break
+                else:
+                    boundaries.append(Line(a, b))
+            if cell.walls[S]:
+                a, b = (line_x, line_y+cell.size), (line_x+cell.size, line_y+cell.size)
+                for boundary in boundaries:
+                    if boundary.a == a and boundary.b == b:
+                        break
+                else:
+                    boundaries.append(Line(a, b))
+            if cell.walls[E]:
+                a, b = (line_x, line_y), (line_x, line_y+cell.size)
+                for boundary in boundaries:
+                    if boundary.a == a and boundary.b == b:
+                        break
+                else:
+                    boundaries.append(Line(a, b))
+
+    # boundaries = [Line((0, 0), (WIDTH, 0)), Line((0, HEIGHT-1), (WIDTH, HEIGHT-1)), Line((0, 0), (0, HEIGHT)), Line((WIDTH-1, 0), (WIDTH-1, HEIGHT))]
+
+    # for r in range(0, random.randint(MIN_BOUNDARIES, MAX_BOUNDARIES)):
+    #     start_point = (random.randint(0, WIDTH/GRID_SIZE)*GRID_SIZE, random.randint(0, HEIGHT/GRID_SIZE)*GRID_SIZE)
+
+    #     dir = [random.randint(0, 1)]
+    #     dir.append(abs(dir[0]-1))
+
+    #     end_point = (start_point[0] + dir[0] * (GRID_SIZE * random.randint(MIN_LENGTH, WIDTH/GRID_SIZE)), start_point[1] + dir[1] * (GRID_SIZE * random.randint(MIN_LENGTH, WIDTH/GRID_SIZE)))
+    #     boundaries.append(Line(start_point, end_point))
 
 def update_light(mode):
     global mouse, player
@@ -50,19 +90,15 @@ def update_light(mode):
         for boundary in boundaries:
             intersect_point = ray.intersect(boundary)
             if intersect_point:
-                intersect_points[intersect_point] = 0
-    
-        if len(intersect_points) != 0:        
-            for point in intersect_points:
-                intersect_points[point] = math.sqrt(math.pow(point[0]-ray.pos.x, 2)+math.pow(point[1]-ray.pos.y, 2))
+                intersect_distance = math.sqrt(math.pow(intersect_point[0]-ray.pos.x, 2)+math.pow(intersect_point[1]-ray.pos.y, 2))
+                intersect_points[intersect_distance] = intersect_point
 
-            intersect_points = dict(sorted(intersect_points.items(), key=lambda item: item[1]))
+        if len(intersect_points) != 0:
+            closest_distances = sorted(list(intersect_points.keys()))
 
-            light_area.append(list(intersect_points.keys())[0])
+            light_area.append(intersect_points[closest_distances[0]])
     
     return light_area
-
-maze = generate_maze(40, 40)
 
 def redrawGameWindow():
     screen.fill(BG_COLOR)
@@ -97,14 +133,16 @@ while running:
             if event.key == pygame.KMOD_LCTRL:
                 running = False
 
-        if event.type == pygame.MOUSEMOTION:
+        if event.type == pygame.MOUSEMOTION and mode == "m":
             light_area = update_light(mode)
 
+            # t = timeit.Timer(lambda: update_light(mode))
+            # print(t.timeit(1))
+
             mouse_pos = pygame.mouse.get_pos()
-            if mode == "m":
-                for ray in mouse:
-                    ray.pos.x = mouse_pos[0]
-                    ray.pos.y = mouse_pos[1]
+            for ray in mouse:
+                ray.pos.x = mouse_pos[0]
+                ray.pos.y = mouse_pos[1]
 
     key_pressed = pygame.key.get_pressed()
     retrace = False

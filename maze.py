@@ -1,5 +1,6 @@
 import random
 import pygame
+import timeit
 
 N, S, E, W = 0, 1, 2, 3
 directions = {N: (0, -1), S: (0, 1), E: (-1, 0), W: (1, 0)}
@@ -45,11 +46,12 @@ def interative_maze(cx, cy, grid):
                 nx, ny = next_coord(cx, cy, adj)
 
                 if 0 <= ny < len(grid) and 0 <= nx < len(grid[ny]) and not grid[ny][nx].visited:
-                    num_of_walls = 0
-                    for wall in grid[ny][nx].walls:
-                        if wall:
-                            num_of_walls += 1
-                    if num_of_walls > 3:
+                    # num_of_walls = 0
+                    # for wall in grid[ny][nx].walls:
+                    #     if wall:
+                    #         num_of_walls += 1
+                    # if num_of_walls > 3:
+                    if grid[ny][nx].walls.count(True) > 3:
                         grid[cy][cx].visit()
                         grid[cy][cx].walls[adj] = False
                         grid[ny][nx].walls[opposite[adj]] = False
@@ -68,11 +70,12 @@ def recursive_maze(cx, cy, grid):
         nx, ny = next_coord(cx, cy, adj)
 
         if 0 <= ny < len(grid) and 0 <= nx < len(grid[ny]) and not grid[ny][nx].visited:
-            num_of_walls = 0
-            for wall in grid[ny][nx].walls:
-                if wall:
-                    num_of_walls += 1
-            if num_of_walls > 3:
+            # num_of_walls = 0
+            # for wall in grid[ny][nx].walls:
+            #     if wall:
+            #         num_of_walls += 1
+            # if num_of_walls > 3:
+            if grid[ny][nx].walls.count(True) > 3:
                 grid[cy][cx].visit()
                 grid[cy][cx].walls[adj] = False
                 grid[ny][nx].walls[opposite[adj]] = False
@@ -94,7 +97,16 @@ def draw_maze(screen, grid):
         for cell in row:
             cell.draw(screen)
 
+def time_maze(width, height, size, method, repeat=3, number=1):
+    t = timeit.Timer(lambda: generate_maze(width, height, size, method))
+
+    results = t.repeat(repeat, number)
+    print(method.__name__, " Average Time:", sum(results)/len(results))
+
 if __name__ == "__main__":
+    time_maze(10, 10, 10, interative_maze, 5)
+    time_maze(10, 10, 10, recursive_maze, 5)
+
     width = 600
     height = 600
     size = 20
