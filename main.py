@@ -3,6 +3,7 @@ from const import *
 from ray import Ray
 from line import Line
 from player import Player
+from maze import *
 import numpy, math, random
 
 screen = pygame.display.set_mode((WIDTH, HEIGHT))
@@ -60,6 +61,8 @@ def update_light(mode):
             light_area.append(list(intersect_points.keys())[0])
     
     return light_area
+
+maze = generate_maze(40, 40)
 
 def redrawGameWindow():
     screen.fill(BG_COLOR)
