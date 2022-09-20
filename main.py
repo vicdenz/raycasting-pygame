@@ -29,7 +29,7 @@ def randomize_boundaries():
 
     rows = WIDTH//GRID_SIZE
     columns = HEIGHT//GRID_SIZE
-    maze = generate_maze(rows, columns, GRID_SIZE, interative_maze)
+    maze = generate_maze(rows, columns, GRID_SIZE, recursive_maze)
 
     for row in maze:
         for cell in row:
