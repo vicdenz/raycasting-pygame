@@ -2,7 +2,7 @@ import pygame
 from const import *
 import random
 class Line:# a = startpoint, b = endpoint
-    def __init__(self, a, b, color=LINE_COLOR, width=4):
+    def __init__(self, a, b, color=LINE_COLOR, width=1):
         self.a = pygame.Vector2(a)
         self.b = pygame.Vector2(b)
         self.color = color
