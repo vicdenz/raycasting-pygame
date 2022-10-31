@@ -102,7 +102,7 @@ def get_neighbours(i, j, rows, columns):
 
 	return neighbours
 
-def nearest_intersection(ray, r, c, cells, row_limit, column_limit):
+def nearest_intersection(ray, r, c, cells, row_limit, column_limit):#NOT USED
     p_neighbours = get_neighbours(r, c, row_limit, column_limit)
     skip_neighbours = []
 
@@ -167,11 +167,6 @@ def update_light(mode):
             closest_distance = sorted(list(intersect_points.keys()))[0]
             light_area.append(intersect_points[closest_distance][0])
             wall_hit.append(intersect_points[closest_distance][1])
-        
-        # intersect_point = nearest_intersection(ray, math.floor(ray.pos.x/GRID_SIZE), math.floor(ray.pos.y/GRID_SIZE), cells, len(cells), len(cells[0]))
-
-        # if intersect_point:
-        #     light_area.append(intersect_point)
 
     return light_area, wall_hit
 
@@ -182,13 +177,13 @@ def redrawGameWindow():
         boundary.draw(display)
 
     if mode == "m":
-        # for ray in mouse:
+        # for ray in mouse:#DEBUG
         #     ray.draw(display)
 
         if len(light_area) > 2:
             pygame.draw.polygon(display, RAY_COLOR, light_area)
     elif mode == "p":
-        # player.draw(display)
+        # player.draw(display)#DEBUG
 
         if len(light_area) > 2:
             pygame.draw.polygon(display, RAY_COLOR, light_area+[player.pos])
@@ -232,9 +227,6 @@ while running:
 
         if event.type == pygame.MOUSEMOTION and mode == "m":
             light_area, wall_hit = update_light(mode)
-
-            # t = timeit.Timer(lambda: update_light(mode))
-            # print(t.timeit(1))
 
             mouse_pos = pygame.mouse.get_pos()
             for ray in mouse:
@@ -289,14 +281,15 @@ while running:
     if retrace:
         light_area, wall_hit = update_light(mode)
 
-        if player.get_x() < 1:#left
-            player.set_pos((1, player.get_y()))
-        if player.get_x() > WIDTH-1:#right
-            player.set_pos((WIDTH-1, player.get_y()))
-        if player.get_y() < 1:#up
-            player.set_pos((player.get_x(), 1))
-        if player.get_y() > HEIGHT-1:#down
-            player.set_pos((player.get_x(), HEIGHT-1))
+        if mode == "p":
+            if player.get_x() < 1:#left
+                player.set_pos((1, player.get_y()))
+            if player.get_x() > WIDTH-1:#right
+                player.set_pos((WIDTH-1, player.get_y()))
+            if player.get_y() < 1:#up
+                player.set_pos((player.get_x(), 1))
+            if player.get_y() > HEIGHT-1:#down
+                player.set_pos((player.get_x(), HEIGHT-1))
 
     redrawGameWindow()
 

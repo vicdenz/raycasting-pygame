@@ -26,6 +26,7 @@ class Player:# pos = position, angle = direction facing, scope = FOV of the play
         # angle_diff = new_angle - self.angle
         self.angle = new_angle
 
+        # VERY poor method to rotate
         self.rays = [Ray(self.pos, (math.cos(radian), math.sin(radian))) for radian in numpy.arange(self.angle-math.radians(self.scope/2), self.angle+math.radians(self.scope/2), math.pi/(180/DEGREE_INCREMENT))]
 
         # for ray in self.rays:
